@@ -13,7 +13,9 @@ fn alias(alias: &str, has_feature: bool) {
 
 fn main() {
   let target_os = std::env::var("CARGO_CFG_TARGET_OS").unwrap();
-  let mobile = target_os == "ios" || target_os == "android";
+  // Termux builds the desktop runtime on the android target, so android is
+  // not a mobile target here.
+  let mobile = target_os == "ios";
   alias("desktop", !mobile);
   alias("mobile", mobile);
 }
