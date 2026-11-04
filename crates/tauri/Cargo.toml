@@ -83,7 +83,7 @@ specta = { version = "^2.0.0-rc.16", optional = true, default-features = false, 
 cookie = "0.18"
 
 # desktop
-[target.'cfg(any(target_os = "linux", target_os = "dragonfly", target_os = "freebsd", target_os = "openbsd", target_os = "netbsd", target_os = "windows", target_os = "macos"))'.dependencies]
+[target.'cfg(any(target_os = "linux", target_os = "android", target_os = "dragonfly", target_os = "freebsd", target_os = "openbsd", target_os = "netbsd", target_os = "windows", target_os = "macos"))'.dependencies]
 muda = { version = "0.20", default-features = false, features = [
   "serde",
   "gtk3",
@@ -94,7 +94,7 @@ tray-icon = { version = "0.25", default-features = false, features = [
 ], optional = true }
 
 # linux
-[target.'cfg(any(target_os = "linux", target_os = "dragonfly", target_os = "freebsd", target_os = "openbsd", target_os = "netbsd"))'.dependencies]
+[target.'cfg(any(target_os = "linux", target_os = "android", target_os = "dragonfly", target_os = "freebsd", target_os = "openbsd", target_os = "netbsd"))'.dependencies]
 gtk = { version = "0.18", features = ["v3_24"] }
 webkit2gtk = { version = "2", features = ["v2_40"], optional = true }
 
@@ -142,7 +142,7 @@ windows = { version = "0.62", features = [
 ] }
 
 # mobile
-[target.'cfg(any(target_os = "android", all(target_vendor = "apple", not(target_os = "macos"))))'.dependencies]
+[target.'cfg(any(any(), all(target_vendor = "apple", not(target_os = "macos"))))'.dependencies]
 bytes = { version = "1", features = ["serde"] }
 reqwest = { version = "0.13", default-features = false, features = [
   "json",
@@ -153,7 +153,7 @@ rustls = { version = "0.23", default-features = false, features = [
 ], optional = true }
 
 # android
-[target.'cfg(target_os = "android")'.dependencies]
+[target.'cfg(any())'.dependencies]
 jni = "0.21"
 
 # UIKit, i.e. iOS/tvOS/watchOS/visionOS

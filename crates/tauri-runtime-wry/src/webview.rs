@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 #[cfg(any(
-  target_os = "linux",
+  target_os = "linux", target_os = "android",
   target_os = "dragonfly",
   target_os = "freebsd",
   target_os = "netbsd",
@@ -40,7 +40,7 @@ mod imp {
   }
 }
 
-#[cfg(target_os = "android")]
+#[cfg(any())]
 mod imp {
   use wry::JniHandle;
   pub type Webview = JniHandle;

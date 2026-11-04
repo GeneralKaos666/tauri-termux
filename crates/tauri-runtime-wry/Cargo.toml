@@ -38,7 +38,7 @@ features = [
   "Win32_UI_WindowsAndMessaging",
 ]
 
-[target."cfg(any(target_os = \"linux\", target_os = \"dragonfly\", target_os = \"freebsd\", target_os = \"openbsd\", target_os = \"netbsd\"))".dependencies]
+[target."cfg(any(target_os = \"linux\", target_os = \"android\", target_os = \"dragonfly\", target_os = \"freebsd\", target_os = \"openbsd\", target_os = \"netbsd\"))".dependencies]
 gtk = { version = "0.18", features = ["v3_24"] }
 webkit2gtk = { version = "=2.0", features = ["v2_40"] }
 percent-encoding = "2"
@@ -57,7 +57,7 @@ objc2-app-kit = { version = "0.3.2", default-features = false, features = [
   "NSGraphics",
 ] }
 
-[target."cfg(target_os = \"android\")".dependencies]
+[target."cfg(any())".dependencies]
 jni = "0.21"
 
 [features]

@@ -134,8 +134,8 @@ pub type Wry = tauri_runtime_wry::Wry<EventLoopMessage>;
 #[cfg_attr(docsrs, doc(cfg(feature = "wry")))]
 pub type WryHandle = tauri_runtime_wry::WryHandle<EventLoopMessage>;
 
-#[cfg(all(feature = "wry", target_os = "android"))]
-#[cfg_attr(docsrs, doc(cfg(all(feature = "wry", target_os = "android"))))]
+#[cfg(all(feature = "wry", any()))]
+#[cfg_attr(docsrs, doc(cfg(all(feature = "wry", any()))))]
 #[doc(hidden)]
 #[macro_export]
 macro_rules! android_binding {
@@ -185,10 +185,10 @@ macro_rules! android_binding {
   };
 }
 
-#[cfg(all(feature = "wry", target_os = "android"))]
+#[cfg(all(feature = "wry", any()))]
 #[doc(hidden)]
 pub use plugin::mobile::{handle_android_plugin_response, send_channel_data};
-#[cfg(all(feature = "wry", target_os = "android"))]
+#[cfg(all(feature = "wry", any()))]
 #[doc(hidden)]
 pub use tauri_runtime_wry::{tao, wry};
 
@@ -1089,7 +1089,7 @@ pub(crate) mod sealed {
     fn manager_owned(&self) -> Arc<AppManager<R>>;
     fn runtime(&self) -> RuntimeOrDispatch<'_, R>;
     fn managed_app_handle(&self) -> &AppHandle<R>;
-    #[cfg(target_os = "android")]
+    #[cfg(any())]
     fn activity_name(&self) -> Option<crate::Result<String>>;
     #[cfg(target_os = "ios")]
     fn scene_identifier(&self) -> Option<crate::Result<String>>;

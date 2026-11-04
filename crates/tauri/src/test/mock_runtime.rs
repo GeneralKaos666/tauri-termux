@@ -230,7 +230,7 @@ impl<T: UserEvent> RuntimeHandle<T> for MockRuntimeHandle {
   fn display_handle(
     &self,
   ) -> std::result::Result<raw_window_handle::DisplayHandle<'_>, raw_window_handle::HandleError> {
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     return Ok(unsafe {
       raw_window_handle::DisplayHandle::borrow_raw(raw_window_handle::RawDisplayHandle::Xlib(
         raw_window_handle::XlibDisplayHandle::new(None, 0),
@@ -248,7 +248,7 @@ impl<T: UserEvent> RuntimeHandle<T> for MockRuntimeHandle {
         raw_window_handle::WindowsDisplayHandle::new(),
       ))
     });
-    #[cfg(not(any(target_os = "linux", target_os = "macos", windows)))]
+    #[cfg(not(any(target_os = "linux", target_os = "android", target_os = "macos", windows)))]
     unimplemented!();
   }
 
@@ -284,7 +284,7 @@ impl<T: UserEvent> RuntimeHandle<T> for MockRuntimeHandle {
     // no-op
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn find_class<'a>(
     &self,
     env: &mut jni::JNIEnv<'a>,
@@ -294,7 +294,7 @@ impl<T: UserEvent> RuntimeHandle<T> for MockRuntimeHandle {
     todo!()
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn run_on_android_context<F>(&self, f: F)
   where
     F: FnOnce(&mut jni::JNIEnv<'_>, &jni::objects::JObject<'_>, &jni::objects::JObject<'_>)
@@ -495,7 +495,7 @@ impl WindowBuilder for MockWindowBuilder {
   }
 
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -546,12 +546,12 @@ impl WindowBuilder for MockWindowBuilder {
     self
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name<S: Into<String>>(self, _class_name: S) -> Self {
     self
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn created_by_activity_name<S: Into<String>>(self, _class_name: S) -> Self {
     self
   }
@@ -814,7 +814,7 @@ impl<T: UserEvent> WindowDispatch<T> for MockWindowDispatcher {
   }
 
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -825,7 +825,7 @@ impl<T: UserEvent> WindowDispatch<T> for MockWindowDispatcher {
   }
 
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -835,7 +835,7 @@ impl<T: UserEvent> WindowDispatch<T> for MockWindowDispatcher {
     unimplemented!()
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name(&self) -> Result<String> {
     unimplemented!()
   }
@@ -848,7 +848,7 @@ impl<T: UserEvent> WindowDispatch<T> for MockWindowDispatcher {
   fn window_handle(
     &self,
   ) -> std::result::Result<raw_window_handle::WindowHandle<'_>, raw_window_handle::HandleError> {
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     return unsafe {
       Ok(raw_window_handle::WindowHandle::borrow_raw(
         raw_window_handle::RawWindowHandle::Xlib(raw_window_handle::XlibWindowHandle::new(0)),
@@ -870,7 +870,7 @@ impl<T: UserEvent> WindowDispatch<T> for MockWindowDispatcher {
         )),
       ))
     };
-    #[cfg(not(any(target_os = "linux", target_os = "macos", windows)))]
+    #[cfg(not(any(target_os = "linux", target_os = "android", target_os = "macos", windows)))]
     unimplemented!();
   }
 
@@ -1205,7 +1205,7 @@ impl<T: UserEvent> Runtime<T> for MockRuntime {
 
   #[cfg(any(
     windows,
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1336,7 +1336,7 @@ impl<T: UserEvent> Runtime<T> for MockRuntime {
   #[cfg(any(
     target_os = "macos",
     windows,
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",

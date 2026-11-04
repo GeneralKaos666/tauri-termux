@@ -239,7 +239,7 @@ pub enum RunEvent<T: UserEvent> {
   /// This event is useful as a place to put your code that should be run after all state-changing events have been handled and you want to do stuff (updating state, performing calculations, etc) that happens as the "main body" of your event loop.
   MainEventsCleared,
   /// Emitted when the user wants to open the specified resource with the app.
-  #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
+  #[cfg(any(target_os = "macos", target_os = "ios", any()))]
   Opened { urls: Vec<url::Url> },
   /// Emitted when the NSApplicationDelegate's applicationShouldHandleReopen gets called
   #[cfg(target_os = "macos")]
@@ -364,7 +364,7 @@ pub trait RuntimeHandle<T: UserEvent>: Debug + Clone + Send + Sync + Sized + 'st
   fn set_device_event_filter(&self, filter: DeviceEventFilter);
 
   /// Finds an Android class in the project scope.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn find_class<'a>(
     &self,
     env: &mut jni::JNIEnv<'a>,
@@ -375,7 +375,7 @@ pub trait RuntimeHandle<T: UserEvent>: Debug + Clone + Send + Sync + Sized + 'st
   /// Dispatch a closure to run on the Android context.
   ///
   /// The closure takes the JNI env, the Android activity instance and the possibly null webview.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn run_on_android_context<F>(&self, f: F)
   where
     F: FnOnce(&mut jni::JNIEnv, &jni::objects::JObject, &jni::objects::JObject) + Send + 'static;
@@ -403,7 +403,7 @@ pub trait EventLoopProxy<T: UserEvent>: Debug + Clone + Send + Sync {
 #[derive(Default)]
 pub struct RuntimeInitArgs {
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -431,7 +431,7 @@ pub trait Runtime<T: UserEvent>: Debug + Sized + 'static {
   /// Creates a new webview runtime on any thread.
   #[cfg(any(
     windows,
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -441,7 +441,7 @@ pub trait Runtime<T: UserEvent>: Debug + Sized + 'static {
     docsrs,
     doc(cfg(any(
       windows,
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -779,7 +779,7 @@ pub trait WindowDispatch<T: UserEvent>: Debug + Clone + Send + Sync + Sized + 's
 
   /// Returns the `ApplicationWindow` from gtk crate that is used by this window.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -789,7 +789,7 @@ pub trait WindowDispatch<T: UserEvent>: Debug + Clone + Send + Sync + Sized + 's
 
   /// Returns the vertical [`gtk::Box`] that is added by default as the sole child of this window.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -798,7 +798,7 @@ pub trait WindowDispatch<T: UserEvent>: Debug + Clone + Send + Sync + Sized + 's
   fn default_vbox(&self) -> Result<gtk::Box>;
 
   /// Returns the name of the Android activity associated with this window.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name(&self) -> Result<String>;
 
   /// Returns the identifier of the UIScene tied to this UIWindow.

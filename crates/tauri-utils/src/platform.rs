@@ -16,7 +16,7 @@ mod starting_binary;
 ///
 /// This is referenced in the Tauri Android library,
 /// which resolves these assets to a file descriptor.
-#[cfg(target_os = "android")]
+#[cfg(any())]
 pub const ANDROID_ASSET_PROTOCOL_URI_PREFIX: &str = "asset://localhost/";
 
 /// Resource id of the application icon that `tauri-build` embeds into Windows executables
@@ -87,7 +87,7 @@ impl Target {
       Self::Windows
     } else if cfg!(target_os = "ios") {
       Self::Ios
-    } else if cfg!(target_os = "android") {
+    } else if cfg!(any()) {
       Self::Android
     } else {
       Self::Linux
@@ -205,7 +205,7 @@ pub fn target_triple() -> crate::Result<String> {
     return Err(crate::Error::Architecture);
   };
 
-  let os = if cfg!(target_os = "linux") {
+  let os = if cfg!(any(target_os = "linux", target_os = "android")) {
     "unknown-linux"
   } else if cfg!(target_os = "macos") {
     "apple-darwin"
@@ -236,7 +236,7 @@ pub fn target_triple() -> crate::Result<String> {
   Ok(format!("{arch}-{os}"))
 }
 
-#[cfg(all(not(test), not(target_os = "android")))]
+#[cfg(all(not(test), not(any())))]
 fn is_cargo_output_directory(path: &std::path::Path) -> bool {
   path.join(".cargo-lock").exists()
 }
@@ -270,21 +270,21 @@ fn is_cargo_output_directory(path: &std::path::Path) -> bool {
 ///   with that, you can read the files through [`FsExt::fs`](https://docs.rs/tauri-plugin-fs/latest/tauri_plugin_fs/trait.FsExt.html#tymethod.fs)
 ///   like this: `app.fs().read_to_string(app.path().resource_dir().unwrap().join("resource"));`
 pub fn resource_dir(package_info: &PackageInfo, env: &Env) -> crate::Result<PathBuf> {
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   return resource_dir_android(package_info, env);
-  #[cfg(not(target_os = "android"))]
+  #[cfg(not(any()))]
   {
     let exe = current_exe()?;
     resource_dir_from(exe, package_info, env)
   }
 }
 
-#[cfg(target_os = "android")]
+#[cfg(any())]
 fn resource_dir_android(_package_info: &PackageInfo, _env: &Env) -> crate::Result<PathBuf> {
   Ok(PathBuf::from(ANDROID_ASSET_PROTOCOL_URI_PREFIX))
 }
 
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any()))]
 #[allow(unused_variables)]
 fn resource_dir_from<P: AsRef<std::path::Path>>(
   exe: P,
@@ -312,7 +312,7 @@ fn resource_dir_from<P: AsRef<std::path::Path>>(
   #[allow(unused_mut, unused_assignments)]
   let mut res = Err(crate::Error::UnsupportedPlatform);
 
-  #[cfg(target_os = "linux")]
+  #[cfg(any(target_os = "linux", target_os = "android"))]
   {
     // (canonicalize checks for existence, so there's no need for an extra check)
     res = if let Ok(bundle_dir) = exe_dir
@@ -406,7 +406,7 @@ mod tests {
   use crate::{Env, PackageInfo};
 
   #[test]
-  #[cfg(not(target_os = "android"))]
+  #[cfg(not(any()))]
   fn resolve_resource_dir() {
     let package_info = PackageInfo {
       name: "MyApp".into(),
@@ -434,7 +434,7 @@ mod tests {
     let resource_dir = super::resource_dir_from(&path, &package_info, &env);
     #[cfg(target_os = "macos")]
     assert!(resource_dir.is_err());
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     assert_eq!(resource_dir.unwrap(), PathBuf::from("/usr/lib/MyApp"));
     #[cfg(windows)]
     assert_eq!(resource_dir.unwrap(), path.parent().unwrap());

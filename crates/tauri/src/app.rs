@@ -255,10 +255,10 @@ pub enum RunEvent {
   /// This event is useful as a place to put your code that should be run after all state-changing events have been handled and you want to do stuff (updating state, performing calculations, etc) that happens as the "main body" of your event loop.
   MainEventsCleared,
   /// Emitted when the user wants to open the specified resource with the app.
-  #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
+  #[cfg(any(target_os = "macos", target_os = "ios", any()))]
   #[cfg_attr(
     docsrs,
-    doc(cfg(any(target_os = "macos", target_os = "ios", target_os = "android")))
+    doc(cfg(any(target_os = "macos", target_os = "ios", any())))
   )]
   Opened {
     /// The URL of the resources that is being open.
@@ -587,7 +587,7 @@ impl<R: Runtime> AppHandle<R> {
   }
 
   /// Finishes the Android activity, and any other activity of its task, so the app closes gracefully.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   pub(crate) fn finish_activity(&self) -> crate::Result<()> {
     // the app plugin is a core plugin, so its Android handle is always managed
     self
@@ -729,7 +729,7 @@ impl<R: Runtime> ManagerBase<R> for AppHandle<R> {
     self
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name(&self) -> Option<crate::Result<String>> {
     None
   }
@@ -789,7 +789,7 @@ impl<R: Runtime> ManagerBase<R> for App<R> {
     self.handle()
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name(&self) -> Option<crate::Result<String>> {
     None
   }
@@ -1155,7 +1155,7 @@ macro_rules! shared_app_impl {
       }
 
       /// Whether the application supports multiple windows.
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       pub fn supports_multiple_windows(&self) -> bool {
         let runtime_handle = match self.runtime() {
           RuntimeOrDispatch::Runtime(runtime) => runtime.handle(),
@@ -1435,7 +1435,7 @@ impl<R: Runtime> App<R> {
     mut callback: F,
   ) -> impl FnMut(RuntimeRunEvent<EventLoopMessage>) {
     // whether the activity is being finished to fulfill an exit request the app accepted
-    #[cfg(target_os = "android")]
+    #[cfg(any())]
     let mut finishing_activity = false;
 
     move |event| match event {
@@ -1457,7 +1457,7 @@ impl<R: Runtime> App<R> {
       // On Android, exiting the process while the activity is still on screen skips the close transition
       // and flashes a blank screen, so a programmatic exit finishes the activity instead and the event loop
       // exits through the regular window destroyed path.
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       RuntimeRunEvent::ExitRequested {
         code: Some(code),
         tx,
@@ -1487,7 +1487,7 @@ impl<R: Runtime> App<R> {
           }
         }
       }
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       RuntimeRunEvent::ExitRequested { code: None, .. } if finishing_activity => {
         // the app already accepted this exit when it was requested
       }
@@ -1554,7 +1554,7 @@ impl<R: Runtime> App<R> {
 #[allow(clippy::type_complexity)]
 pub struct Builder<R: Runtime> {
   /// A flag indicating that the runtime must be started on an environment that supports the event loop not on the main thread.
-  #[cfg(any(windows, target_os = "linux"))]
+  #[cfg(any(windows, target_os = "linux", target_os = "android"))]
   runtime_any_thread: bool,
 
   /// The JS message handler.
@@ -1653,7 +1653,7 @@ impl<R: Runtime> Builder<R> {
     let invoke_key = crate::generate_invoke_key().unwrap();
 
     Self {
-      #[cfg(any(windows, target_os = "linux"))]
+      #[cfg(any(windows, target_os = "linux", target_os = "android"))]
       runtime_any_thread: false,
       setup: Box::new(|_| Ok(())),
       invoke_handler: Box::new(|_| false),
@@ -1697,8 +1697,8 @@ impl<R: Runtime> Builder<R> {
   /// ## Platform-specific
   ///
   /// - **macOS:** on macOS the application *must* be executed on the main thread, so this function is not exposed.
-  #[cfg(any(windows, target_os = "linux"))]
-  #[cfg_attr(docsrs, doc(cfg(any(windows, target_os = "linux"))))]
+  #[cfg(any(windows, target_os = "linux", target_os = "android"))]
+  #[cfg_attr(docsrs, doc(cfg(any(windows, target_os = "linux", target_os = "android"))))]
   #[must_use]
   pub fn any_thread(mut self) -> Self {
     self.runtime_any_thread = true;
@@ -2437,7 +2437,7 @@ tauri::Builder::default()
     ));
 
     #[cfg(any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -2451,7 +2451,7 @@ tauri::Builder::default()
 
     let runtime_args = RuntimeInitArgs {
       #[cfg(any(
-        target_os = "linux",
+        target_os = "linux", target_os = "android",
         target_os = "dragonfly",
         target_os = "freebsd",
         target_os = "netbsd",
@@ -2501,13 +2501,13 @@ tauri::Builder::default()
       }
     }
 
-    #[cfg(any(windows, target_os = "linux"))]
+    #[cfg(any(windows, target_os = "linux", target_os = "android"))]
     let mut runtime = if self.runtime_any_thread {
       R::new_any_thread(runtime_args)?
     } else {
       R::new(runtime_args)?
     };
-    #[cfg(not(any(windows, target_os = "linux")))]
+    #[cfg(not(any(windows, target_os = "linux", target_os = "android")))]
     let mut runtime = R::new(runtime_args)?;
 
     #[cfg(target_os = "macos")]
@@ -2793,7 +2793,7 @@ fn on_event_loop_event<R: Runtime>(
       #[allow(unreachable_code)]
       t.into()
     }
-    #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
+    #[cfg(any(target_os = "macos", target_os = "ios", any()))]
     RuntimeRunEvent::Opened { urls } => RunEvent::Opened { urls },
     #[cfg(target_os = "macos")]
     RuntimeRunEvent::Reopen {

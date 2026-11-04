@@ -77,7 +77,7 @@ impl<R: Runtime> MenuManager<R> {
           let _ = unsafe { menu.inner().init_for_hwnd_with_theme(raw.hwnd as _, theme) };
         }
         #[cfg(any(
-          target_os = "linux",
+          target_os = "linux", target_os = "android",
           target_os = "dragonfly",
           target_os = "freebsd",
           target_os = "netbsd",

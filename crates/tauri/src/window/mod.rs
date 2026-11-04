@@ -127,7 +127,7 @@ unstable_struct!(
     #[cfg(desktop)]
     on_menu_event: Option<crate::app::GlobalMenuEventListener<Window<R>>>,
     window_effects: Option<WindowEffectsConfig>,
-    #[cfg(target_os = "android")]
+    #[cfg(any())]
     created_by_activity_name_set: bool,
     #[cfg(target_os = "ios")]
     requested_by_scene_identifier_set: bool,
@@ -217,7 +217,7 @@ async fn create_window(app: tauri::AppHandle) {
       #[cfg(desktop)]
       on_menu_event: None,
       window_effects: None,
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       created_by_activity_name_set: false,
       #[cfg(target_os = "ios")]
       requested_by_scene_identifier_set: false,
@@ -256,7 +256,7 @@ async fn reopen_window(app: tauri::AppHandle) {
   pub fn from_config(manager: &'a M, config: &WindowConfig) -> crate::Result<Self> {
     #[cfg_attr(not(windows), allow(unused_mut))]
     let mut builder = Self {
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       created_by_activity_name_set: config.created_by_activity_name.is_some(),
       #[cfg(target_os = "ios")]
       requested_by_scene_identifier_set: config.requested_by_scene_identifier.is_some(),
@@ -362,7 +362,7 @@ tauri::Builder::default()
     #[cfg(desktop)]
     let theme = self.window_builder.get_theme();
 
-    #[cfg(target_os = "android")]
+    #[cfg(any())]
     if !self.created_by_activity_name_set {
       if let Some(manager_window_activity_name) = self.manager.activity_name() {
         self.window_builder = self
@@ -654,7 +654,7 @@ impl<'a, R: Runtime, M: Manager<R>> WindowBuilder<'a, R, M> {
     }
 
     #[cfg(any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -735,7 +735,7 @@ impl<'a, R: Runtime, M: Manager<R>> WindowBuilder<'a, R, M> {
   ///
   /// **Note:** This is a low level API. See [`Self::parent`] for a higher level wrapper for Tauri windows.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -752,7 +752,7 @@ impl<'a, R: Runtime, M: Manager<R>> WindowBuilder<'a, R, M> {
   ///
   /// **Note:** This is a low level API. See [`Self::parent`] and [`Self::transient_for`] for higher level wrappers for Tauri windows.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -944,7 +944,7 @@ impl<'a, R: Runtime, M: Manager<R>> WindowBuilder<'a, R, M> {
   }
 }
 
-#[cfg(target_os = "android")]
+#[cfg(any())]
 impl<R: Runtime, M: Manager<R>> WindowBuilder<'_, R, M> {
   /// The name of the activity to create for this webview window.
   pub fn activity_name<S: Into<String>>(mut self, class_name: S) -> Self {
@@ -1085,7 +1085,7 @@ impl<R: Runtime> ManagerBase<R> for Window<R> {
     &self.app_handle
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name(&self) -> Option<crate::Result<String>> {
     Some(self.activity_name())
   }
@@ -1388,7 +1388,7 @@ tauri::Builder::default()
         let _ = unsafe { menu_.inner().init_for_hwnd_with_theme(hwnd.0 as _, theme) };
       }
       #[cfg(any(
-        target_os = "linux",
+        target_os = "linux", target_os = "android",
         target_os = "dragonfly",
         target_os = "freebsd",
         target_os = "netbsd",
@@ -1429,7 +1429,7 @@ tauri::Builder::default()
           let _ = unsafe { menu.inner().remove_for_hwnd(hwnd.0 as _) };
         }
         #[cfg(any(
-          target_os = "linux",
+          target_os = "linux", target_os = "android",
           target_os = "dragonfly",
           target_os = "freebsd",
           target_os = "netbsd",
@@ -1465,7 +1465,7 @@ tauri::Builder::default()
           let _ = unsafe { menu_.inner().hide_for_hwnd(hwnd.0 as _) };
         }
         #[cfg(any(
-          target_os = "linux",
+          target_os = "linux", target_os = "android",
           target_os = "dragonfly",
           target_os = "freebsd",
           target_os = "netbsd",
@@ -1497,7 +1497,7 @@ tauri::Builder::default()
           let _ = unsafe { menu_.inner().show_for_hwnd(hwnd.0 as _) };
         }
         #[cfg(any(
-          target_os = "linux",
+          target_os = "linux", target_os = "android",
           target_os = "dragonfly",
           target_os = "freebsd",
           target_os = "netbsd",
@@ -1530,7 +1530,7 @@ tauri::Builder::default()
           let _ = tx.send(unsafe { menu_.inner().is_visible_on_hwnd(hwnd.0 as _) });
         }
         #[cfg(any(
-          target_os = "linux",
+          target_os = "linux", target_os = "android",
           target_os = "dragonfly",
           target_os = "freebsd",
           target_os = "netbsd",
@@ -1781,7 +1781,7 @@ impl<R: Runtime> Window<R> {
   ///
   /// Note that this type can only be used on the main thread.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1795,7 +1795,7 @@ impl<R: Runtime> Window<R> {
   ///
   /// Note that this type can only be used on the main thread.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1806,7 +1806,7 @@ impl<R: Runtime> Window<R> {
   }
 
   /// Returns the name of the Android activity associated with this window.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   pub fn activity_name(&self) -> crate::Result<String> {
     self.window.dispatcher.activity_name().map_err(Into::into)
   }
@@ -2450,7 +2450,7 @@ tauri::Builder::default()
 #[cfg(desktop)]
 #[cfg_attr(
   docsrs,
-  doc(cfg(any(target_os = "macos", target_os = "linux", windows)))
+  doc(cfg(any(target_os = "macos", target_os = "linux", target_os = "android", windows)))
 )]
 #[derive(serde::Deserialize, Debug)]
 pub struct ProgressBarState {

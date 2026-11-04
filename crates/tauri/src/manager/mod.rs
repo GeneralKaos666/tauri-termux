@@ -786,7 +786,7 @@ mod test {
     {
       assert_eq!(
         manager.get_app_url(false).to_string(),
-        if cfg!(windows) || cfg!(target_os = "android") {
+        if cfg!(windows) || cfg!(any()) {
           "http://tauri.localhost/"
         } else {
           "tauri://localhost"
@@ -794,7 +794,7 @@ mod test {
       );
       assert_eq!(
         manager.get_app_url(true).to_string(),
-        if cfg!(windows) || cfg!(target_os = "android") {
+        if cfg!(windows) || cfg!(any()) {
           "https://tauri.localhost/"
         } else {
           "tauri://localhost"

@@ -158,7 +158,7 @@ pub struct PlatformWebview(tauri_runtime_wry::Webview);
 impl PlatformWebview {
   /// Returns [`webkit2gtk::WebView`] handle.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -167,7 +167,7 @@ impl PlatformWebview {
   #[cfg_attr(
     docsrs,
     doc(cfg(any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -233,7 +233,7 @@ impl PlatformWebview {
   }
 
   /// Returns handle for JNI execution.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   pub fn jni_handle(&self) -> tauri_runtime_wry::wry::JniHandle {
     self.0
   }
@@ -1396,7 +1396,7 @@ fn main() {
   #[cfg(all(
     feature = "wry",
     any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -1813,7 +1813,7 @@ tauri::Builder::default()
   .setup(|app| {
     let main_webview = app.get_webview("main").unwrap();
     main_webview.with_webview(|webview| {
-      #[cfg(target_os = "linux")]
+      #[cfg(any(target_os = "linux", target_os = "android"))]
       {
         // see <https://docs.rs/webkit2gtk/2.0.0/webkit2gtk/struct.WebView.html>
         // and <https://docs.rs/webkit2gtk/2.0.0/webkit2gtk/trait.WebViewExt.html>
@@ -1839,7 +1839,7 @@ tauri::Builder::default()
         window.setBackgroundColor(Some(&bg_color));
       }
 
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       {
         use jni::objects::JValue;
         webview.jni_handle().exec(|env, _, webview| {
@@ -1980,12 +1980,12 @@ tauri::Builder::default()
         let scheme = current_url.scheme();
         let protocols = self.manager().webview.uri_scheme_protocols.lock().unwrap();
 
-        #[cfg(all(not(windows), not(target_os = "android")))]
+        #[cfg(all(not(windows), not(any())))]
         let local = protocols.contains_key(scheme);
 
         // on window and android, custom protocols are `http://<protocol-name>.path/to/route`
         // so we check using the first part of the domain
-        #[cfg(any(windows, target_os = "android"))]
+        #[cfg(any(windows, any()))]
         let local = {
           let scheme = scheme == self.manager().tauri_protocol_url(uses_https).scheme();
           let protocol = current_url
@@ -2590,7 +2590,7 @@ impl<R: Runtime> ManagerBase<R> for Webview<R> {
     &self.app_handle
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name(&self) -> Option<crate::Result<String>> {
     Some(self.window().activity_name())
   }
@@ -2690,7 +2690,7 @@ mod tests {
     let convert =
       |w: &crate::WebviewWindow<_>, protocol| w.convert_file_src(path, protocol).unwrap();
 
-    #[cfg(any(windows, target_os = "android"))]
+    #[cfg(any(windows, any()))]
     {
       assert_eq!(
         convert(&http, None),
@@ -2705,7 +2705,7 @@ mod tests {
         format!("http://custom.localhost/{encoded}")
       );
     }
-    #[cfg(not(any(windows, target_os = "android")))]
+    #[cfg(not(any(windows, any())))]
     {
       assert_eq!(convert(&http, None), format!("asset://localhost/{encoded}"));
       assert_eq!(
@@ -2736,17 +2736,17 @@ mod tests {
   fn tauri_protocol_is_local() {
     let webview = test_webview_window().webview;
 
-    #[cfg(all(not(windows), not(target_os = "android")))]
+    #[cfg(all(not(windows), not(any())))]
     assert!(webview.is_local_url(&Url::parse("tauri://localhost/").unwrap()));
 
-    #[cfg(any(windows, target_os = "android"))]
+    #[cfg(any(windows, any()))]
     assert!(webview.is_local_url(&Url::parse("https://tauri.localhost/").unwrap()));
   }
 
   // On Windows/Android, custom protocols are served as `https://<name>.localhost/`.
   // We ensure only `.localhost` domains are accepted to prevent a subdomain being able to
   // impersonate a protocol name.
-  #[cfg(any(windows, target_os = "android"))]
+  #[cfg(any(windows, any()))]
   #[test]
   fn windows_custom_protocol_rejects_spoofed_domain() {
     use crate::test::{mock_builder, mock_context, noop_assets};

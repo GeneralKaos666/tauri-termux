@@ -144,7 +144,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
       supports_multiple_windows,
     ])
     .setup(|_app, _api| {
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       {
         let handle = _api.register_android_plugin("app.tauri", "AppPlugin")?;
         _app.manage(AppPlugin(handle));
@@ -154,5 +154,5 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
     .build()
 }
 
-#[cfg(target_os = "android")]
+#[cfg(any())]
 pub(crate) struct AppPlugin<R: Runtime>(pub crate::plugin::PluginHandle<R>);

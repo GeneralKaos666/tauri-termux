@@ -746,7 +746,7 @@ impl<'a, R: Runtime, M: Manager<R>> WebviewWindowBuilder<'a, R, M> {
   ///
   /// See <https://docs.gtk.org/gtk3/method.Window.set_transient_for.html>
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -761,7 +761,7 @@ impl<'a, R: Runtime, M: Manager<R>> WebviewWindowBuilder<'a, R, M> {
   ///
   /// See <https://docs.gtk.org/gtk3/method.Window.set_transient_for.html>
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1442,7 +1442,7 @@ impl<R: Runtime, M: Manager<R>> WebviewWindowBuilder<'_, R, M> {
   #[cfg(all(
     feature = "wry",
     any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -1472,7 +1472,7 @@ impl<R: Runtime, M: Manager<R>> WebviewWindowBuilder<'_, R, M> {
   #[cfg(any(
     target_os = "macos",
     windows,
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1504,7 +1504,7 @@ impl<R: Runtime, M: Manager<R>> WebviewWindowBuilder<'_, R, M> {
     #[cfg(all(
       feature = "wry",
       any(
-        target_os = "linux",
+        target_os = "linux", target_os = "android",
         target_os = "dragonfly",
         target_os = "freebsd",
         target_os = "netbsd",
@@ -1521,7 +1521,7 @@ impl<R: Runtime, M: Manager<R>> WebviewWindowBuilder<'_, R, M> {
 }
 
 // Android specific APIs
-#[cfg(target_os = "android")]
+#[cfg(any())]
 impl<R: Runtime, M: Manager<R>> WebviewWindowBuilder<'_, R, M> {
   /// The name of the activity to create for this webview window.
   pub fn activity_name<S: Into<String>>(mut self, class_name: S) -> Self {
@@ -1971,7 +1971,7 @@ impl<R: Runtime> WebviewWindow<R> {
   ///
   /// Note that this type can only be used on the main thread.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1985,7 +1985,7 @@ impl<R: Runtime> WebviewWindow<R> {
   ///
   /// Note that this type can only be used on the main thread.
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1996,7 +1996,7 @@ impl<R: Runtime> WebviewWindow<R> {
   }
 
   /// Returns the name of the Android activity associated with this window.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   pub fn activity_name(&self) -> crate::Result<String> {
     self.window.activity_name()
   }
@@ -2862,7 +2862,7 @@ impl<R: Runtime> ManagerBase<R> for WebviewWindow<R> {
     self.webview.managed_app_handle()
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name(&self) -> Option<crate::Result<String>> {
     Some(self.window.activity_name())
   }

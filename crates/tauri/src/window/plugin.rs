@@ -79,7 +79,7 @@ mod commands {
   getter!(is_enabled, bool);
   getter!(title, String);
   getter!(theme, Theme);
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   getter!(activity_name, String);
   #[cfg(target_os = "ios")]
   getter!(scene_identifier, String);
@@ -272,7 +272,7 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
       commands::is_enabled,
       commands::title,
       commands::theme,
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       commands::activity_name,
       #[cfg(target_os = "ios")]
       commands::scene_identifier,

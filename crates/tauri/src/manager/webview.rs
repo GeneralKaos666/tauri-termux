@@ -246,7 +246,7 @@ impl<R: Runtime> WebviewManager<R> {
     let window_url = Url::parse(&pending.url).unwrap();
     let window_origin = if window_url.scheme() == "data" {
       "null".into()
-    } else if (cfg!(windows) || cfg!(target_os = "android"))
+    } else if (cfg!(windows) || cfg!(any()))
       && window_url.scheme() != "http"
       && window_url.scheme() != "https"
     {
@@ -524,7 +524,7 @@ impl<R: Runtime> WebviewManager<R> {
 
     pending.url = url.to_string();
 
-    #[cfg(target_os = "android")]
+    #[cfg(any())]
     {
       pending = pending.on_webview_created(move |ctx| {
         let plugin_manager = ctx
@@ -558,7 +558,7 @@ impl<R: Runtime> WebviewManager<R> {
 
     // in `windows`, we need to force a data_directory
     // but we do respect user-specification
-    #[cfg(any(target_os = "linux", target_os = "windows"))]
+    #[cfg(any(target_os = "linux", target_os = "android", target_os = "windows"))]
     if pending.webview_attributes.data_directory.is_none() {
       match manager.path().app_local_data_dir() {
         Ok(user_data_dir) => pending.webview_attributes.data_directory = Some(user_data_dir),

@@ -5,7 +5,7 @@
 //! A layer between raw [`Runtime`] webviews and Tauri.
 //!
 pub use crate::webview_permissions::{PermissionKind, PermissionResponse};
-#[cfg(not(any(target_os = "android", target_os = "ios")))]
+#[cfg(not(any(any(), target_os = "ios")))]
 use crate::window::WindowId;
 use crate::{Rect, Runtime, UserEvent, window::is_label_valid};
 
@@ -75,7 +75,7 @@ pub enum DownloadEvent<'a> {
   },
 }
 
-#[cfg(target_os = "android")]
+#[cfg(any())]
 pub struct CreationContext<'a, 'b> {
   pub env: &'a mut jni::JNIEnv<'b>,
   pub activity: &'a jni::objects::JObject<'b>,
@@ -98,7 +98,7 @@ pub struct NewWindowOpener {
   ///
   /// This must be set as the related view of the new webview. See [`WebviewAttributes::related_view`].
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -171,7 +171,7 @@ pub enum NewWindowResponse {
   ///
   /// **Linux**: The webview must be related to the caller webview. See [`WebviewAttributes::related_view`].
   /// **Windows**: The webview must use the same environment as the caller webview. See [`WebviewAttributes::with_environment`].
-  #[cfg(not(any(target_os = "android", target_os = "ios")))]
+  #[cfg(not(any(any(), target_os = "ios")))]
   Create { window_id: WindowId },
   /// Deny the window from being opened.
   Deny,
@@ -221,7 +221,7 @@ pub struct PendingWebview<T: UserEvent, R: Runtime<T>> {
   /// The resolved URL to load on the webview.
   pub url: String,
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   #[allow(clippy::type_complexity)]
   pub on_webview_created:
     Option<Box<dyn Fn(CreationContext<'_, '_>) -> Result<(), jni::errors::Error> + Send + Sync>>,
@@ -257,7 +257,7 @@ impl<T: UserEvent, R: Runtime<T>> PendingWebview<T, R> {
         new_window_handler: None,
         document_title_changed_handler: None,
         url: "tauri://localhost".to_string(),
-        #[cfg(target_os = "android")]
+        #[cfg(any())]
         on_webview_created: None,
         web_resource_request_handler: None,
         on_page_load_handler: None,
@@ -286,7 +286,7 @@ impl<T: UserEvent, R: Runtime<T>> PendingWebview<T, R> {
       .insert(uri_scheme, Box::new(protocol_handler));
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   pub fn on_webview_created<
     F: Fn(CreationContext<'_, '_>) -> Result<(), jni::errors::Error> + Send + Sync + 'static,
   >(
@@ -419,7 +419,7 @@ pub struct WebviewAttributes {
   /// Creates a new webview sharing the same web process with the provided webview.
   /// Useful if you need to link a webview to another, for instance when using the [`PendingWebview::new_window_handler`].
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -549,7 +549,7 @@ impl WebviewAttributes {
       #[cfg(windows)]
       environment: None,
       #[cfg(any(
-        target_os = "linux",
+        target_os = "linux", target_os = "android",
         target_os = "dragonfly",
         target_os = "freebsd",
         target_os = "netbsd",

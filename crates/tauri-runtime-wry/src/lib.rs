@@ -35,12 +35,12 @@ use tauri_runtime::{
 
 #[cfg(target_vendor = "apple")]
 use objc2::rc::Retained;
-#[cfg(target_os = "android")]
+#[cfg(any())]
 use tao::platform::android::{WindowBuilderExtAndroid, WindowExtAndroid};
 #[cfg(target_os = "macos")]
 use tao::platform::macos::{EventLoopWindowTargetExtMacOS, WindowBuilderExtMacOS};
 #[cfg(any(
-  target_os = "linux",
+  target_os = "linux", target_os = "android",
   target_os = "dragonfly",
   target_os = "freebsd",
   target_os = "netbsd",
@@ -100,7 +100,7 @@ pub use wry::webview_version;
 
 #[cfg(windows)]
 use wry::WebViewExtWindows;
-#[cfg(target_os = "android")]
+#[cfg(any())]
 use wry::{
   WebViewBuilderExtAndroid, WebViewExtAndroid,
   prelude::{dispatch, find_class},
@@ -109,7 +109,7 @@ use wry::{
   target_os = "windows",
   target_os = "macos",
   target_os = "ios",
-  target_os = "android"
+  any()
 )))]
 use wry::{WebViewBuilderExtUnix, WebViewExtUnix};
 
@@ -148,7 +148,7 @@ mod dialog;
 mod monitor;
 #[cfg(any(
   windows,
-  target_os = "linux",
+  target_os = "linux", target_os = "android",
   target_os = "dragonfly",
   target_os = "freebsd",
   target_os = "netbsd",
@@ -812,7 +812,7 @@ impl WindowBuilder for WindowBuilderWrapper {
     }
 
     #[cfg(any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -823,7 +823,7 @@ impl WindowBuilder for WindowBuilderWrapper {
       window.inner = window.inner.with_cursor_moved_event(false);
     }
 
-    #[cfg(target_os = "android")]
+    #[cfg(any())]
     {
       if let Some(activity_name) = &config.activity_name {
         window.inner = window.inner.with_activity_name(activity_name.clone());
@@ -845,7 +845,7 @@ impl WindowBuilder for WindowBuilderWrapper {
     }
 
     // ignore size from config for mobile for backward compatibility
-    #[cfg(not(any(target_os = "ios", target_os = "android")))]
+    #[cfg(not(any(target_os = "ios", any())))]
     {
       window = window.inner_size(config.width, config.height);
     }
@@ -1097,7 +1097,7 @@ impl WindowBuilder for WindowBuilderWrapper {
   }
 
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1174,7 +1174,7 @@ impl WindowBuilder for WindowBuilderWrapper {
 
   #[cfg(any(
     windows,
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1185,7 +1185,7 @@ impl WindowBuilder for WindowBuilderWrapper {
     self
   }
 
-  #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
+  #[cfg(any(target_os = "macos", target_os = "ios", any()))]
   fn skip_taskbar(self, _skip: bool) -> Self {
     self
   }
@@ -1232,13 +1232,13 @@ impl WindowBuilder for WindowBuilderWrapper {
     self
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name<S: Into<String>>(mut self, class_name: S) -> Self {
     self.inner = self.inner.with_activity_name(class_name.into());
     self
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn created_by_activity_name<S: Into<String>>(mut self, class_name: S) -> Self {
     self.inner = self.inner.with_created_by_activity_name(class_name.into());
     self
@@ -1254,7 +1254,7 @@ impl WindowBuilder for WindowBuilderWrapper {
 }
 
 #[cfg(any(
-  target_os = "linux",
+  target_os = "linux", target_os = "android",
   target_os = "dragonfly",
   target_os = "freebsd",
   target_os = "netbsd",
@@ -1262,7 +1262,7 @@ impl WindowBuilder for WindowBuilderWrapper {
 ))]
 pub struct GtkWindow(pub gtk::ApplicationWindow);
 #[cfg(any(
-  target_os = "linux",
+  target_os = "linux", target_os = "android",
   target_os = "dragonfly",
   target_os = "freebsd",
   target_os = "netbsd",
@@ -1272,7 +1272,7 @@ pub struct GtkWindow(pub gtk::ApplicationWindow);
 unsafe impl Send for GtkWindow {}
 
 #[cfg(any(
-  target_os = "linux",
+  target_os = "linux", target_os = "android",
   target_os = "dragonfly",
   target_os = "freebsd",
   target_os = "netbsd",
@@ -1280,7 +1280,7 @@ unsafe impl Send for GtkWindow {}
 ))]
 pub struct GtkBox(pub gtk::Box);
 #[cfg(any(
-  target_os = "linux",
+  target_os = "linux", target_os = "android",
   target_os = "dragonfly",
   target_os = "freebsd",
   target_os = "netbsd",
@@ -1329,7 +1329,7 @@ pub enum WindowMessage {
   MonitorFromPoint(Sender<Option<Monitor>>, (f64, f64)),
   AvailableMonitors(Sender<Vec<Monitor>>),
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1337,14 +1337,14 @@ pub enum WindowMessage {
   ))]
   GtkWindow(Sender<GtkWindow>),
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
     target_os = "openbsd"
   ))]
   GtkBox(Sender<GtkBox>),
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   ActivityName(Sender<String>),
   #[cfg(target_os = "ios")]
   SceneIdentifier(Sender<String>),
@@ -1424,13 +1424,13 @@ impl From<SynthesizedWindowEvent> for WindowEventWrapper {
 
 pub enum WebviewMessage {
   AddEventListener(WebviewEventId, Box<dyn Fn(&WebviewEvent) + Send>),
-  #[cfg(not(all(feature = "tracing", not(target_os = "android"))))]
+  #[cfg(not(all(feature = "tracing", not(any()))))]
   EvaluateScript(String),
-  #[cfg(all(feature = "tracing", not(target_os = "android")))]
+  #[cfg(all(feature = "tracing", not(any())))]
   EvaluateScript(String, Sender<()>, tracing::Span),
-  #[cfg(not(all(feature = "tracing", not(target_os = "android"))))]
+  #[cfg(not(all(feature = "tracing", not(any()))))]
   EvaluateScriptWithCallback(String, Box<dyn Fn(String) + Send + 'static>),
-  #[cfg(all(feature = "tracing", not(target_os = "android")))]
+  #[cfg(all(feature = "tracing", not(any())))]
   EvaluateScriptWithCallback(
     String,
     Box<dyn Fn(String) + Send + 'static>,
@@ -1721,7 +1721,7 @@ impl<T: UserEvent> WebviewDispatch<T> for WryWebviewDispatcher<T> {
     ))
   }
 
-  #[cfg(all(feature = "tracing", not(target_os = "android")))]
+  #[cfg(all(feature = "tracing", not(any())))]
   fn eval_script<S: Into<String>>(&self, script: S) -> Result<()> {
     // use a channel so the EvaluateScript task uses the current span as parent
     let (tx, rx) = channel();
@@ -1736,7 +1736,7 @@ impl<T: UserEvent> WebviewDispatch<T> for WryWebviewDispatcher<T> {
     )
   }
 
-  #[cfg(not(all(feature = "tracing", not(target_os = "android"))))]
+  #[cfg(not(all(feature = "tracing", not(any()))))]
   fn eval_script<S: Into<String>>(&self, script: S) -> Result<()> {
     self.context.send_user_message(Message::Webview(
       *self.window_id.lock().unwrap(),
@@ -1745,7 +1745,7 @@ impl<T: UserEvent> WebviewDispatch<T> for WryWebviewDispatcher<T> {
     ))
   }
 
-  #[cfg(all(feature = "tracing", not(target_os = "android")))]
+  #[cfg(all(feature = "tracing", not(any())))]
   fn eval_script_with_callback<S: Into<String>>(
     &self,
     script: S,
@@ -1769,7 +1769,7 @@ impl<T: UserEvent> WebviewDispatch<T> for WryWebviewDispatcher<T> {
     )
   }
 
-  #[cfg(not(all(feature = "tracing", not(target_os = "android"))))]
+  #[cfg(not(all(feature = "tracing", not(any()))))]
   fn eval_script_with_callback<S: Into<String>>(
     &self,
     script: S,
@@ -1964,7 +1964,7 @@ impl<T: UserEvent> WindowDispatch<T> for WryWindowDispatcher<T> {
   }
 
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1975,7 +1975,7 @@ impl<T: UserEvent> WindowDispatch<T> for WryWindowDispatcher<T> {
   }
 
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -1986,7 +1986,7 @@ impl<T: UserEvent> WindowDispatch<T> for WryWindowDispatcher<T> {
   }
 
   /// Returns the name of the Android activity associated with this window.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name(&self) -> Result<String> {
     window_getter!(self, WindowMessage::ActivityName)
   }
@@ -2403,7 +2403,7 @@ impl Drop for WebviewWrapper {
         // alive for the lifetime of the app.
         // WebKit on macOS handles this itself.
         #[cfg(not(any(
-          target_os = "linux",
+          target_os = "linux", target_os = "android",
           target_os = "dragonfly",
           target_os = "freebsd",
           target_os = "netbsd",
@@ -2686,7 +2686,7 @@ impl<T: UserEvent> RuntimeHandle<T> for WryHandle<T> {
       ));
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn find_class<'a>(
     &self,
     env: &mut jni::JNIEnv<'a>,
@@ -2696,7 +2696,7 @@ impl<T: UserEvent> RuntimeHandle<T> for WryHandle<T> {
     find_class(env, activity, name.into())
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn run_on_android_context<F>(&self, f: F)
   where
     F: FnOnce(&mut jni::JNIEnv<'_>, &jni::objects::JObject<'_>, &jni::objects::JObject<'_>)
@@ -2743,7 +2743,7 @@ impl<T: UserEvent> Wry<T> {
     }
 
     #[cfg(any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -2801,7 +2801,7 @@ impl<T: UserEvent> Runtime<T> for Wry<T> {
     Self::init_with_builder(EventLoopBuilder::<Message<T>>::with_user_event(), args)
   }
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -3314,7 +3314,7 @@ fn handle_user_message<T: UserEvent>(
             )
             .unwrap(),
           #[cfg(any(
-            target_os = "linux",
+            target_os = "linux", target_os = "android",
             target_os = "dragonfly",
             target_os = "freebsd",
             target_os = "netbsd",
@@ -3322,7 +3322,7 @@ fn handle_user_message<T: UserEvent>(
           ))]
           WindowMessage::GtkWindow(tx) => tx.send(GtkWindow(window.gtk_window().clone())).unwrap(),
           #[cfg(any(
-            target_os = "linux",
+            target_os = "linux", target_os = "android",
             target_os = "dragonfly",
             target_os = "freebsd",
             target_os = "netbsd",
@@ -3331,7 +3331,7 @@ fn handle_user_message<T: UserEvent>(
           WindowMessage::GtkBox(tx) => tx
             .send(GtkBox(window.default_vbox().unwrap().clone()))
             .unwrap(),
-          #[cfg(target_os = "android")]
+          #[cfg(any())]
           WindowMessage::ActivityName(tx) => {
             tx.send(window.activity_name()).unwrap();
           }
@@ -3467,7 +3467,7 @@ fn handle_user_message<T: UserEvent>(
           WindowMessage::SetSkipTaskbar(skip) => {
             #[cfg(any(
               windows,
-              target_os = "linux",
+              target_os = "linux", target_os = "android",
               target_os = "dragonfly",
               target_os = "freebsd",
               target_os = "netbsd",
@@ -3518,7 +3518,7 @@ fn handle_user_message<T: UserEvent>(
             window.set_badge_label(_count.map(|x| x.to_string()));
 
             #[cfg(any(
-              target_os = "linux",
+              target_os = "linux", target_os = "android",
               target_os = "dragonfly",
               target_os = "freebsd",
               target_os = "netbsd",
@@ -3578,7 +3578,7 @@ fn handle_user_message<T: UserEvent>(
       #[cfg(any(
         target_os = "macos",
         windows,
-        target_os = "linux",
+        target_os = "linux", target_os = "android",
         target_os = "dragonfly",
         target_os = "freebsd",
         target_os = "netbsd",
@@ -3608,7 +3608,7 @@ fn handle_user_message<T: UserEvent>(
             let reparent_result = { webview.inner.reparent(new_parent_window.hwnd()) };
 
             #[cfg(any(
-              target_os = "linux",
+              target_os = "linux", target_os = "android",
               target_os = "dragonfly",
               target_os = "freebsd",
               target_os = "netbsd",
@@ -3659,7 +3659,7 @@ fn handle_user_message<T: UserEvent>(
               .insert(id, listener);
           }
 
-          #[cfg(all(feature = "tracing", not(target_os = "android")))]
+          #[cfg(all(feature = "tracing", not(any())))]
           WebviewMessage::EvaluateScript(script, tx, span) => {
             let _span = span.entered();
             if let Err(e) = webview.evaluate_script(&script) {
@@ -3667,13 +3667,13 @@ fn handle_user_message<T: UserEvent>(
             }
             tx.send(()).unwrap();
           }
-          #[cfg(not(all(feature = "tracing", not(target_os = "android"))))]
+          #[cfg(not(all(feature = "tracing", not(any()))))]
           WebviewMessage::EvaluateScript(script) => {
             if let Err(e) = webview.evaluate_script(&script) {
               log::error!("{e}");
             }
           }
-          #[cfg(all(feature = "tracing", not(target_os = "android")))]
+          #[cfg(all(feature = "tracing", not(any())))]
           WebviewMessage::EvaluateScriptWithCallback(script, callback, tx, span) => {
             let _span = span.entered();
             if let Err(e) = webview.evaluate_script_with_callback(&script, callback) {
@@ -3681,7 +3681,7 @@ fn handle_user_message<T: UserEvent>(
             }
             tx.send(()).unwrap();
           }
-          #[cfg(not(all(feature = "tracing", not(target_os = "android"))))]
+          #[cfg(not(all(feature = "tracing", not(any()))))]
           WebviewMessage::EvaluateScriptWithCallback(script, callback) => {
             if let Err(e) = webview.evaluate_script_with_callback(&script, callback) {
               log::error!("{e}");
@@ -3890,7 +3890,7 @@ fn handle_user_message<T: UserEvent>(
           },
           WebviewMessage::WithWebview(f) => {
             #[cfg(any(
-              target_os = "linux",
+              target_os = "linux", target_os = "android",
               target_os = "dragonfly",
               target_os = "freebsd",
               target_os = "netbsd",
@@ -3930,7 +3930,7 @@ fn handle_user_message<T: UserEvent>(
                 environment: webview.environment(),
               });
             }
-            #[cfg(target_os = "android")]
+            #[cfg(any())]
             {
               f(webview.handle())
             }
@@ -4329,7 +4329,7 @@ fn handle_event_loop<T: UserEvent>(
         );
       }
     },
-    #[cfg(any(target_os = "macos", target_os = "ios", target_os = "android"))]
+    #[cfg(any(target_os = "macos", target_os = "ios", any()))]
     Event::Opened { urls } => {
       callback(RunEvent::Opened { urls });
     }
@@ -4514,7 +4514,7 @@ fn create_window<T: UserEvent, F: Fn(RawWindow) + Send + 'static>(
     }
   };
 
-  #[cfg(any(target_os = "macos", target_os = "linux"))]
+  #[cfg(any(target_os = "macos", target_os = "linux", target_os = "android"))]
   let (initial_position, is_fullscreen) = (
     window_builder.inner.window.position,
     window_builder.inner.window.fullscreen.is_some(),
@@ -4522,7 +4522,7 @@ fn create_window<T: UserEvent, F: Fn(RawWindow) + Send + 'static>(
 
   // If fullscreen is requested with an explicit position, resolve the target
   // monitor up front so the window is created fullscreen on that display.
-  #[cfg(any(target_os = "macos", target_os = "linux"))]
+  #[cfg(any(target_os = "macos", target_os = "linux", target_os = "android"))]
   if let (true, Some(position)) = (is_fullscreen, initial_position) {
     if let Some(target_monitor) =
       find_monitor_for_position(event_loop.available_monitors(), position)
@@ -4568,7 +4568,7 @@ fn create_window<T: UserEvent, F: Fn(RawWindow) + Send + 'static>(
       #[cfg(windows)]
       hwnd: window.hwnd(),
       #[cfg(any(
-        target_os = "linux",
+        target_os = "linux", target_os = "android",
         target_os = "dragonfly",
         target_os = "freebsd",
         target_os = "netbsd",
@@ -4576,7 +4576,7 @@ fn create_window<T: UserEvent, F: Fn(RawWindow) + Send + 'static>(
       ))]
       gtk_window: window.gtk_window(),
       #[cfg(any(
-        target_os = "linux",
+        target_os = "linux", target_os = "android",
         target_os = "dragonfly",
         target_os = "freebsd",
         target_os = "netbsd",
@@ -4753,7 +4753,7 @@ You may have it installed on another user account, but it is not available for t
     webview_builder = webview_builder.with_webview_configuration(webview_configuration);
   }
 
-  #[cfg(any(target_os = "windows", target_os = "android"))]
+  #[cfg(any(target_os = "windows", any()))]
   {
     webview_builder = webview_builder.with_https_scheme(webview_attributes.use_https_scheme);
   }
@@ -4867,7 +4867,7 @@ You may have it installed on another user account, but it is not available for t
             #[cfg(target_os = "macos")]
             webview: wry::WebViewExtMacOS::webview(&*webview).as_super().into(),
             #[cfg(any(
-              target_os = "linux",
+              target_os = "linux", target_os = "android",
               target_os = "dragonfly",
               target_os = "freebsd",
               target_os = "netbsd",
@@ -5011,7 +5011,7 @@ You may have it installed on another user account, but it is not available for t
 
   #[cfg(any(
     windows,
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -5024,7 +5024,7 @@ You may have it installed on another user account, but it is not available for t
   }
 
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -5115,7 +5115,7 @@ You may have it installed on another user account, but it is not available for t
     // on Linux the custom protocols are associated with the web context
     // and you cannot register a scheme more than once
     #[cfg(any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",
@@ -5148,7 +5148,7 @@ You may have it installed on another user account, but it is not available for t
     webview_builder = webview_builder.with_devtools(webview_attributes.devtools.unwrap_or(true));
   }
 
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   {
     if let Some(on_webview_created) = pending.on_webview_created {
       webview_builder = webview_builder.on_webview_created(move |ctx| {
@@ -5166,7 +5166,7 @@ You may have it installed on another user account, but it is not available for t
       target_os = "windows",
       target_os = "macos",
       target_os = "ios",
-      target_os = "android"
+      any()
     )))]
     WebviewKind::WindowChild => {
       // only way to account for menu bar height, and also works for multiwebviews :)
@@ -5177,7 +5177,7 @@ You may have it installed on another user account, but it is not available for t
       target_os = "windows",
       target_os = "macos",
       target_os = "ios",
-      target_os = "android"
+      any()
     ))]
     WebviewKind::WindowChild => webview_builder.build_as_child(&window),
     WebviewKind::WindowContent => {
@@ -5185,14 +5185,14 @@ You may have it installed on another user account, but it is not available for t
         target_os = "windows",
         target_os = "macos",
         target_os = "ios",
-        target_os = "android"
+        any()
       ))]
       let builder = webview_builder.build(&window);
       #[cfg(not(any(
         target_os = "windows",
         target_os = "macos",
         target_os = "ios",
-        target_os = "android"
+        any()
       )))]
       let builder = {
         let vbox = window.default_vbox().unwrap();
@@ -5205,7 +5205,7 @@ You may have it installed on another user account, but it is not available for t
 
   if kind == WebviewKind::WindowContent {
     #[cfg(any(
-      target_os = "linux",
+      target_os = "linux", target_os = "android",
       target_os = "dragonfly",
       target_os = "freebsd",
       target_os = "netbsd",

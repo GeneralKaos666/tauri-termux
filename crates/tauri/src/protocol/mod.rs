@@ -30,7 +30,7 @@ pub(crate) const ENCODE_URI_COMPONENT: &AsciiSet = &NON_ALPHANUMERIC
 /// On Windows and Android custom protocols are served over `http(s)://{scheme}.localhost`;
 /// everywhere else they are served over `{scheme}://localhost`.
 pub(crate) fn origin(scheme: &str, use_https: bool) -> String {
-  if cfg!(windows) || cfg!(target_os = "android") {
+  if cfg!(windows) || cfg!(any()) {
     let http = if use_https { "https" } else { "http" };
     format!("{http}://{scheme}.localhost")
   } else {

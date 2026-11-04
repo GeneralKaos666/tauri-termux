@@ -5,7 +5,7 @@
 use super::{PluginApi, PluginHandle};
 
 use crate::{AppHandle, Runtime, ipc::Channel};
-#[cfg(target_os = "android")]
+#[cfg(any())]
 use crate::{
   runtime::RuntimeHandle,
   sealed::{ManagerBase, RuntimeOrDispatch},
@@ -41,7 +41,7 @@ pub enum PluginInvokeError {
   #[error("the webview is unreachable")]
   UnreachableWebview,
   /// JNI error.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   #[error("jni error: {0}")]
   Jni(#[from] jni::errors::Error),
   /// Error returned from direct mobile plugin invoke.
@@ -64,7 +64,7 @@ pub(crate) fn register_channel(channel: Channel<serde_json::Value>) {
 }
 
 /// Glue between Rust and the Kotlin code that sends the plugin response back.
-#[cfg(target_os = "android")]
+#[cfg(any())]
 pub fn handle_android_plugin_response(
   env: &mut jni::JNIEnv<'_>,
   id: i32,
@@ -109,7 +109,7 @@ pub fn handle_android_plugin_response(
 }
 
 /// Glue between Rust and the Kotlin code that sends the channel data.
-#[cfg(target_os = "android")]
+#[cfg(any())]
 pub fn send_channel_data(
   env: &mut jni::JNIEnv<'_>,
   channel_id: i64,
@@ -204,7 +204,7 @@ impl<R: Runtime, C: DeserializeOwned> PluginApi<R, C> {
   }
 
   /// Registers an Android plugin.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   pub fn register_android_plugin(
     &self,
     plugin_identifier: &str,
@@ -445,7 +445,7 @@ pub(crate) fn run_command<R: Runtime, C: AsRef<str>, F: FnOnce(PluginResponse) +
   Ok(())
 }
 
-#[cfg(target_os = "android")]
+#[cfg(any())]
 pub(crate) fn run_command<
   R: Runtime,
   C: AsRef<str>,

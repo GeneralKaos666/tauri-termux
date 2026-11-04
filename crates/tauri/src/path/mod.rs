@@ -17,14 +17,14 @@ pub(crate) mod plugin;
 
 use crate::error::*;
 
-#[cfg(target_os = "android")]
+#[cfg(any())]
 mod android;
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any()))]
 mod desktop;
 
-#[cfg(target_os = "android")]
+#[cfg(any())]
 pub use android::PathResolver;
-#[cfg(not(target_os = "android"))]
+#[cfg(not(any()))]
 pub use desktop::PathResolver;
 
 /// A wrapper for [`PathBuf`] that prevents path traversal.
@@ -157,26 +157,26 @@ pub enum BaseDirectory {
   AppLog = 17,
   /// The Desktop directory.
   /// Resolves to [`crate::path::PathResolver::desktop_dir`].
-  #[cfg(not(target_os = "android"))]
+  #[cfg(not(any()))]
   Desktop = 18,
   /// The Executable directory.
   /// Resolves to [`crate::path::PathResolver::executable_dir`].
-  #[cfg(not(target_os = "android"))]
+  #[cfg(not(any()))]
   Executable = 19,
   /// The Font directory.
   /// Resolves to [`crate::path::PathResolver::font_dir`].
-  #[cfg(not(target_os = "android"))]
+  #[cfg(not(any()))]
   Font = 20,
   /// The Home directory.
   /// Resolves to [`crate::path::PathResolver::home_dir`].
   Home = 21,
   /// The Runtime directory.
   /// Resolves to [`crate::path::PathResolver::runtime_dir`].
-  #[cfg(not(target_os = "android"))]
+  #[cfg(not(any()))]
   Runtime = 22,
   /// The Template directory.
   /// Resolves to [`crate::path::PathResolver::template_dir`].
-  #[cfg(not(target_os = "android"))]
+  #[cfg(not(any()))]
   Template = 23,
 }
 
@@ -203,15 +203,15 @@ impl BaseDirectory {
       Self::AppLog => "$APPLOG",
       Self::Home => "$HOME",
 
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       Self::Desktop => "$DESKTOP",
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       Self::Executable => "$EXE",
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       Self::Font => "$FONT",
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       Self::Runtime => "$RUNTIME",
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       Self::Template => "$TEMPLATE",
     }
   }
@@ -239,15 +239,15 @@ impl BaseDirectory {
       "$APPLOG" => Self::AppLog,
       "$HOME" => Self::Home,
 
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       "$DESKTOP" => Self::Desktop,
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       "$EXE" => Self::Executable,
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       "$FONT" => Self::Font,
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       "$RUNTIME" => Self::Runtime,
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       "$TEMPLATE" => Self::Template,
 
       _ => return None,
@@ -338,15 +338,15 @@ fn resolve_path<R: Runtime>(
     BaseDirectory::AppCache => resolver.app_cache_dir(),
     BaseDirectory::AppLog => resolver.app_log_dir(),
     BaseDirectory::Home => resolver.home_dir(),
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any()))]
     BaseDirectory::Desktop => resolver.desktop_dir(),
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any()))]
     BaseDirectory::Executable => resolver.executable_dir(),
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any()))]
     BaseDirectory::Font => resolver.font_dir(),
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any()))]
     BaseDirectory::Runtime => resolver.runtime_dir(),
-    #[cfg(not(target_os = "android"))]
+    #[cfg(not(any()))]
     BaseDirectory::Template => resolver.template_dir(),
   }?;
 

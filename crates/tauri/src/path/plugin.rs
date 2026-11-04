@@ -229,13 +229,13 @@ pub(crate) fn init<R: Runtime>() -> TauriPlugin<R> {
     ])
     .js_init_script(init_js.to_string())
     .setup(|app, _api| {
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       {
         let handle = _api.register_android_plugin("app.tauri", "PathPlugin")?;
         app.manage(PathResolver(handle));
       }
 
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       {
         app.manage(PathResolver(app.clone()));
       }

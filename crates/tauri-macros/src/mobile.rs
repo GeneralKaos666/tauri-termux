@@ -75,7 +75,7 @@ pub fn entry_point(_attributes: TokenStream, item: TokenStream) -> TokenStream {
       fn _start_app() {
         #[cfg(target_os = "ios")]
         ::tauri::log_stdout();
-        #[cfg(target_os = "android")]
+        #[cfg(any())]
         {
           ::tauri::android_binding!(#domain, #app_name, _start_app, ::tauri::wry);
         }
@@ -83,7 +83,7 @@ pub fn entry_point(_attributes: TokenStream, item: TokenStream) -> TokenStream {
       }
 
       // be careful when renaming this, the `start_app` symbol is checked by the CLI
-      #[cfg(not(target_os = "android"))]
+      #[cfg(not(any()))]
       #[unsafe(no_mangle)]
       #[inline(never)]
       pub extern "C" fn start_app() {

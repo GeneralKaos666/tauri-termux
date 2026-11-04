@@ -59,7 +59,7 @@ async fn get_response(
   let mut file = match File::open(&safe_path).await {
     Ok(file) => file,
     Err(e) => {
-      #[cfg(target_os = "android")]
+      #[cfg(any())]
       {
         if path.starts_with("/storage/emulated/0/Android/data/") {
           log::error!(

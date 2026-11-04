@@ -81,6 +81,9 @@ opt-level = "s"
 # See https://github.com/GREsau/schemars/issues/120 for reference
 [patch.crates-io]
 schemars_derive = { git = 'https://github.com/tauri-apps/schemars.git', branch = 'feat/preserve-description-newlines' }
+tao = { git = "https://github.com/GeneralKaos666/tao-termux", branch = "termux" }
+wry = { git = "https://github.com/GeneralKaos666/wry-termux", branch = "termux" }
+muda = { git = "https://github.com/GeneralKaos666/muda-termux", branch = "termux" }
 tauri = { path = "./crates/tauri" }
 tauri-plugin = { path = "./crates/tauri-plugin" }
 

@@ -4,7 +4,7 @@
 
 #![cfg(any(
   windows,
-  target_os = "linux",
+  target_os = "linux", target_os = "android",
   target_os = "dragonfly",
   target_os = "freebsd",
   target_os = "netbsd",

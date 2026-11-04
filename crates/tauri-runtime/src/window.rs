@@ -71,7 +71,7 @@ pub enum WindowEvent {
   /// - **iOS**: This is triggered by `applicationWillResignActive` method of the UIApplicationDelegate.
   /// - **Linux / macOS / Windows**: Unsupported.
   #[cfg(mobile)]
-  #[cfg_attr(docsrs, doc(cfg(any(target_os = "android", target_os = "ios"))))]
+  #[cfg_attr(docsrs, doc(cfg(any(any(), target_os = "ios"))))]
   Suspended,
 
   /// Emitted when the application has been resumed.
@@ -82,7 +82,7 @@ pub enum WindowEvent {
   /// - **iOS**: This is triggered by `applicationWillEnterForeground` method of the UIApplicationDelegate.
   /// - **Linux / macOS / Windows**: Unsupported.
   #[cfg(mobile)]
-  #[cfg_attr(docsrs, doc(cfg(any(target_os = "android", target_os = "ios"))))]
+  #[cfg_attr(docsrs, doc(cfg(any(any(), target_os = "ios"))))]
   Resumed,
 }
 
@@ -446,7 +446,7 @@ pub trait WindowBuilder: WindowBuilderBase {
   ///
   /// See <https://docs.gtk.org/gtk3/method.Window.set_transient_for.html>
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -506,13 +506,13 @@ pub trait WindowBuilder: WindowBuilderBase {
   fn no_redirection_bitmap(self, enable: bool) -> Self;
 
   /// The name of the activity to create for this webview window.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn activity_name<S: Into<String>>(self, class_name: S) -> Self;
 
   /// Sets the name of the activity that is creating this webview window.
   ///
   /// This is important to determine which stack the activity will belong to.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   fn created_by_activity_name<S: Into<String>>(self, class_name: S) -> Self;
 
   /// Sets the identifier of the UIScene that is requesting the creation of this new scene,
@@ -646,7 +646,7 @@ pub struct RawWindow<'a> {
   #[cfg(windows)]
   pub hwnd: isize,
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",
@@ -654,7 +654,7 @@ pub struct RawWindow<'a> {
   ))]
   pub gtk_window: &'a gtk::ApplicationWindow,
   #[cfg(any(
-    target_os = "linux",
+    target_os = "linux", target_os = "android",
     target_os = "dragonfly",
     target_os = "freebsd",
     target_os = "netbsd",

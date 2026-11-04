@@ -89,7 +89,7 @@ pub enum Error {
   #[error("Unexpected `raw_window_handle` for the current platform")]
   InvalidWindowHandle,
   /// JNI error.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   #[error("jni error: {0}")]
   Jni(#[from] jni::errors::Error),
   /// Failed to receive message .
@@ -129,14 +129,14 @@ pub enum Error {
   #[error("failed to read current dir: {0}")]
   CurrentDir(std::io::Error),
   /// Unknown path.
-  #[cfg(not(target_os = "android"))]
+  #[cfg(not(any()))]
   #[error("unknown path")]
   UnknownPath,
   /// The `app > appDirectoriesOverride` config contains a path that cannot be resolved.
   #[error("invalid `app > appDirectoriesOverride` path `{path}`: {reason}", path = .0.display(), reason = .1)]
   InvalidAppDirectoriesOverride(std::path::PathBuf, String),
   /// Failed to invoke mobile plugin.
-  #[cfg(target_os = "android")]
+  #[cfg(any())]
   #[error(transparent)]
   PluginInvoke(#[from] crate::plugin::mobile::PluginInvokeError),
   /// window not found.

@@ -272,10 +272,10 @@ impl Display for Theme {
 #[non_exhaustive]
 pub struct Env {
   /// The APPIMAGE environment variable.
-  #[cfg(target_os = "linux")]
+  #[cfg(any(target_os = "linux", target_os = "android"))]
   pub appimage: Option<std::ffi::OsString>,
   /// The APPDIR environment variable.
-  #[cfg(target_os = "linux")]
+  #[cfg(any(target_os = "linux", target_os = "android"))]
   pub appdir: Option<std::ffi::OsString>,
   /// The command line arguments of the current process.
   pub args_os: Vec<OsString>,
@@ -285,12 +285,12 @@ pub struct Env {
 impl Default for Env {
   fn default() -> Self {
     let args_os = std::env::args_os().collect();
-    #[cfg(target_os = "linux")]
+    #[cfg(any(target_os = "linux", target_os = "android"))]
     {
       let env = Self {
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "android"))]
         appimage: std::env::var_os("APPIMAGE"),
-        #[cfg(target_os = "linux")]
+        #[cfg(any(target_os = "linux", target_os = "android"))]
         appdir: std::env::var_os("APPDIR"),
         args_os,
       };
@@ -315,7 +315,7 @@ impl Default for Env {
       }
       env
     }
-    #[cfg(not(target_os = "linux"))]
+    #[cfg(not(any(target_os = "linux", target_os = "android")))]
     {
       Self { args_os }
     }
