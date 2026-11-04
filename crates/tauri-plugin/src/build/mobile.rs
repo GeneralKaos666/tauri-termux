@@ -105,7 +105,9 @@ pub(crate) fn setup(
   #[allow(unused_variables)] ios_path: Option<PathBuf>,
 ) -> Result<()> {
   let target_os = build_var("CARGO_CFG_TARGET_OS")?;
-  let mobile = target_os == "android" || target_os == "ios";
+  // Termux builds the desktop runtime on the android target, so android is not
+  // mobile here and has no native project to set up.
+  let mobile = target_os == "ios";
   cfg_alias("mobile", mobile);
   cfg_alias("desktop", !mobile);
 
